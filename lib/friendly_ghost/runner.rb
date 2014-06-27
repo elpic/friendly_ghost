@@ -15,7 +15,9 @@ module FriendlyGhost
     def command(args)
       @process = Child.new("#{@casper_path} #{args}")
 
-      @result = parse_result
+      @result = {}
+      @result['output'] = @process.out
+      @result['error']  = @process.err
       @result['status'] = @process.success?
 
       @result
@@ -23,12 +25,6 @@ module FriendlyGhost
 
     def raw_output
       @process.out
-    end
-
-    def parse_result
-      json_line = @process.out.split(/\n/).select { |line| line =~ /\{/ }
-      output = json_line.first.strip
-      MultiJson.load(output)
     end
   end
 end
